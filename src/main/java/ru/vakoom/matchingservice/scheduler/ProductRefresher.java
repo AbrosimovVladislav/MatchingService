@@ -18,7 +18,6 @@ public class ProductRefresher {
 
     @Scheduled(cron = "0 0 */12 * * *") // every 12 hours
     public void refreshProducts() {
-//        offerRepository.deleteAll();
         List<Product> products = aggregatorInfoService.getAll();
         productService.save(products);
     }
