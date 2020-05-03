@@ -1,14 +1,18 @@
 package ru.vakoom.matchingservice.model;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 
 @Data
-@Entity
+@Accessors(chain = true)
 public class FinalOffer {
-
-    @Id
-    private String id;
+    private String name;
+    private String brand;
+    private Double price;
+    private Boolean inStore;
+    private String category;
+    private String shopName;
+    private String link;
+    private Long productId;
 }

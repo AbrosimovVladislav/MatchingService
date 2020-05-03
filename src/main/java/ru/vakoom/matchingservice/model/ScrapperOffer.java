@@ -12,7 +12,7 @@ public class ScrapperOffer {
     private String id;
     private String name;
     private String brand;
-    private String price;
+    private Double price;
     private Boolean inStore;
     private String category;
     private String shopName;
