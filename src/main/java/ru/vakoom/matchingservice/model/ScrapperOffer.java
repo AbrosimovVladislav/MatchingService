@@ -2,8 +2,13 @@ package ru.vakoom.matchingservice.model;
 
 import lombok.Data;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 @Data
-public class Offer {
+@Entity
+public class ScrapperOffer {
+    @Id
     private String id;
     private String name;
     private String brand;
