@@ -14,7 +14,7 @@ public class ScrapperOffer {
     private String brand;
     private Double price;
     private Boolean inStore;
-    private String category;
+    private String menuItem;
     private String shopName;
     private String link;
 }
