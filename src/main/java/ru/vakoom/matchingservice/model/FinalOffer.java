@@ -11,7 +11,7 @@ public class FinalOffer {
     private String brand;
     private Double price;
     private Boolean inStore;
-    private String category;
+    private Type type;
     private String shopName;
     private String link;
     private Long productId;

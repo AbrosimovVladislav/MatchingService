@@ -21,19 +21,18 @@ public class ProductService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public List<Product> save(List<Product> products) {
-        return (List<Product>) productRepository.saveAll(products);
+        return productRepository.saveAll(products);
     }
 
     public List<Product> getProductsFromAggregator() {
         String url = AGGREGATOR_BASE_PATH + AGGREGATOR_MATCHER_PRODUCTS_PATH;
-        List<Product> products = restTemplate.exchange(
+        return restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 RequestEntity.EMPTY,
                 new ParameterizedTypeReference<List<Product>>() {
                 }
         ).getBody();
-        return products;
     }
 
 }

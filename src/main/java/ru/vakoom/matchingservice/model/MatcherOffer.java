@@ -19,4 +19,5 @@ public class MatcherOffer {
     private Long productId;
     private String shop;
     private String brand;
+    private String age;
 }

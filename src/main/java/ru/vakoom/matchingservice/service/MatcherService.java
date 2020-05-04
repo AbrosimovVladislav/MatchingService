@@ -1,7 +1,6 @@
 package ru.vakoom.matchingservice.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class MatcherService implements InitializingBean {
+public class MatcherService {
 
     public static final String AGGREGATOR_SERVICE_BASE_PATH = "http://localhost:8082";
     public static final String AGGREGATOR_SERVICE_RECEIVE_FINAL_OFFERS_PATH = "/offers";
@@ -31,11 +30,8 @@ public class MatcherService implements InitializingBean {
 
     private List<Product> products;
 
-    public void afterPropertiesSet() {
-        products = productRepository.findAll();
-    }
-
     public void matchOffers(List<ScrapperOffer> scrapperOffers) {
+        products = productRepository.findAll();
         List<FinalOffer> finalOffers = new ArrayList<>();
 
         for (var scrapperOffer : scrapperOffers) {
@@ -53,7 +49,10 @@ public class MatcherService implements InitializingBean {
 
     private Optional<MatcherOffer> getMatcherOfferByScrapperOffer(ScrapperOffer scrapperOffer) {
         //ToDo оптимизировать для оптарвки батч матчинга
-        return matcherOfferRepository.findByNameAndShop(scrapperOffer.getName(), scrapperOffer.getShopName());
+        return matcherOfferRepository.findByNameAndShopAndBrandAndAge(scrapperOffer.getName(),
+                scrapperOffer.getShopName(),
+                scrapperOffer.getBrand(),
+                scrapperOffer.getAge());
     }
 
     private FinalOffer convertToFinalOffer(ScrapperOffer scrapperOffer, MatcherOffer matcherOffer) {
@@ -62,7 +61,7 @@ public class MatcherService implements InitializingBean {
                 .setBrand(scrapperOffer.getBrand())
                 .setPrice(scrapperOffer.getPrice())
                 .setInStore(scrapperOffer.getInStore())
-                .setCategory(scrapperOffer.getMenuItem())
+                .setType(scrapperOffer.getType())
                 .setShopName(scrapperOffer.getShopName())
                 .setLink(scrapperOffer.getLink())
                 .setProductId(matcherOffer.getProductId());
@@ -71,8 +70,9 @@ public class MatcherService implements InitializingBean {
 
     private Optional<MatcherOffer> matchOfferWithProducts(ScrapperOffer scrapperOffer) {
         List<Product> matchedProducts = products.stream()
-                .filter(product -> product.getMenuItem().equals(scrapperOffer.getMenuItem()))
+                .filter(product -> product.getType().equals(scrapperOffer.getType()))
                 .filter(product -> product.getBrand().equals(scrapperOffer.getBrand()) || scrapperOffer.getBrand().isBlank())
+                .filter(product -> product.getAge().equals(scrapperOffer.getAge()) || scrapperOffer.getAge().isBlank())
                 .filter(product -> match(product, scrapperOffer))
                 .collect(Collectors.toList());
 
@@ -86,11 +86,16 @@ public class MatcherService implements InitializingBean {
 
     private Boolean match(Product product, ScrapperOffer scrapperOffer) {
         String productName = product.getModel().toLowerCase();
+        productName = productName.replace(product.getBrand().toLowerCase(), "");
+        productName = productName.replace(product.getAge().toLowerCase(), "");
         String offerName = scrapperOffer.getName().toLowerCase();
-        //ToDo удалять меню айтем
-        //ToDo добавить работу с возрастом
+        offerName = offerName.replace(scrapperOffer.getBrand().toLowerCase(), "");
+        offerName = offerName.replace(scrapperOffer.getAge().toLowerCase(), "");
 
-        offerName = offerName.replace(scrapperOffer.getBrand(),"");
+        //ToDo УДАЛЕНИЕ ТИПА ЧЕРЕЗ УДАЛЕНИЕ РУССКИХ СИМВОЛОВ (ПЛОХОЙ ВАРИАНТ)
+        productName = productName.replaceAll("[^\\w ]", "").trim();
+        offerName = offerName.replaceAll("[^\\w ]", "").trim();
+        //ToDo УДАЛЕНИЕ ТИПА ЧЕРЕЗ УДАЛЕНИЕ РУССКИХ СИМВОЛОВ (ПЛОХОЙ ВАРИАНТ)
 
         List<String> productNameArr = Arrays.asList(productName.split(" "));
         List<String> offerNameArr = Arrays.asList(offerName.split(" "));
@@ -105,7 +110,8 @@ public class MatcherService implements InitializingBean {
                 .setBrand(scrapperOffer.getBrand())
                 .setName(scrapperOffer.getName())
                 .setProductId(product.getProductId())
-                .setShop(scrapperOffer.getShopName());
+                .setShop(scrapperOffer.getShopName())
+                .setAge(scrapperOffer.getAge());
     }
 
     private void sendOffersToAggregator(List<FinalOffer> finalOffers) {
@@ -114,7 +120,8 @@ public class MatcherService implements InitializingBean {
                 url,
                 HttpMethod.POST,
                 new HttpEntity<>(finalOffers),
-                new ParameterizedTypeReference<List<FinalOffer>>() {}
+                new ParameterizedTypeReference<List<FinalOffer>>() {
+                }
         );
     }
 }
