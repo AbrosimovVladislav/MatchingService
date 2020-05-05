@@ -1,12 +1,11 @@
-INSERT INTO matcher_offer (id, name, product_id, shop, brand, age)
+/*INSERT INTO matcher_offer (id, name, product_id, shop, brand, age)
 VALUES (2, 'Раковина Bauer Protective Cup & Supporter YTH', 1, 'HOCKEYBEZGRANIC', 'Bauer', 'YTH')
 ON CONFLICT (id) DO UPDATE
     SET name       = excluded.name,
         product_id = excluded.product_id,
         shop       = excluded.shop,
         brand      = excluded.brand,
-        age        = excluded.age;;
-
+        age        = excluded.age;;*/
 
 INSERT INTO type (type_id, upper, medium, show_name)
 VALUES (1,

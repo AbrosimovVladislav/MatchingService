@@ -71,12 +71,13 @@ public class MatcherService {
     private Optional<MatcherOffer> matchOfferWithProducts(ScrapperOffer scrapperOffer) {
         List<Product> matchedProducts = products.stream()
                 .filter(product -> product.getType().equals(scrapperOffer.getType()))
-                .filter(product -> product.getBrand().equals(scrapperOffer.getBrand()) || scrapperOffer.getBrand().isBlank())
-                .filter(product -> product.getAge().equals(scrapperOffer.getAge()) || scrapperOffer.getAge().isBlank())
+                .filter(product -> product.getBrand().equalsIgnoreCase(scrapperOffer.getBrand()) || scrapperOffer.getBrand().isBlank())
+                .filter(product -> product.getAge().equalsIgnoreCase(scrapperOffer.getAge()) || scrapperOffer.getAge().isBlank())
                 .filter(product -> match(product, scrapperOffer))
                 .collect(Collectors.toList());
 
         if (matchedProducts.size() == 1) {
+            //ToDo если сматчили, и добавили в матчер офферы, надо добавить и в финальные офферы для отправки
             return Optional.of(createMatcherOffer(scrapperOffer, matchedProducts.get(0)));
         } else {
             troubleTicketService.sendToTroubleTicket(scrapperOffer, matchedProducts);
