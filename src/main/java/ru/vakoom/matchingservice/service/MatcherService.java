@@ -37,18 +37,20 @@ public class MatcherService {
         for (var scrapperOffer : scrapperOffers) {
             Optional<MatcherOffer> matcherOfferOrEmpty = getMatcherOfferByScrapperOffer(scrapperOffer);
             if (matcherOfferOrEmpty.isPresent()) {
-                FinalOffer finalOffer = convertToFinalOffer(scrapperOffer, matcherOfferOrEmpty.get());
-                finalOffers.add(finalOffer);
+                finalOffers.add(convertToFinalOffer(scrapperOffer, matcherOfferOrEmpty.get()));
             } else {
-                matchOfferWithProducts(scrapperOffer)
-                        .ifPresent(matcherOfferRepository::save);
+                matcherOfferOrEmpty = matchOfferWithProducts(scrapperOffer);
+                if (matcherOfferOrEmpty.isPresent()) {
+                    matcherOfferRepository.save(matcherOfferOrEmpty.get());
+                    finalOffers.add(convertToFinalOffer(scrapperOffer, matcherOfferOrEmpty.get()));
+                }
             }
         }
-        sendOffersToAggregator(finalOffers);
+         sendOffersToAggregator(finalOffers);
     }
 
     private Optional<MatcherOffer> getMatcherOfferByScrapperOffer(ScrapperOffer scrapperOffer) {
-        //ToDo оптимизировать для оптарвки батч матчинга
+        //ToDo оптимизировать для отпарвки батч матчинга
         return matcherOfferRepository.findByNameAndShopAndBrandAndAge(scrapperOffer.getName(),
                 scrapperOffer.getShopName(),
                 scrapperOffer.getBrand(),
@@ -77,7 +79,6 @@ public class MatcherService {
                 .collect(Collectors.toList());
 
         if (matchedProducts.size() == 1) {
-            //ToDo если сматчили, и добавили в матчер офферы, надо добавить и в финальные офферы для отправки
             return Optional.of(createMatcherOffer(scrapperOffer, matchedProducts.get(0)));
         } else {
             troubleTicketService.sendToTroubleTicket(scrapperOffer, matchedProducts);
@@ -100,10 +101,18 @@ public class MatcherService {
 
         List<String> productNameArr = Arrays.asList(productName.split(" "));
         List<String> offerNameArr = Arrays.asList(offerName.split(" "));
-        if (productNameArr.size() != offerNameArr.size()) return false;
+       /* if (productNameArr.size() != offerNameArr.size()) return false;
         Collections.sort(productNameArr);
         Collections.sort(offerNameArr);
-        return Objects.equals(productNameArr, offerNameArr);
+        return Objects.equals(productNameArr, offerNameArr);*/
+        //ToDo два варинта со склейкой в строку и ос равнением в массив
+        //ToDo если к сравнивать два массива теряются кейсы в стиле (X 2.7 и X2.7 разные товары)
+        //ToDo если склеивать строки, то можем получить ложный матч
+        Collections.sort(productNameArr);
+        Collections.sort(offerNameArr);
+        String productForChecking = String.join("", productNameArr).replace(" ", "");
+        String offerForChecking = String.join("", offerNameArr).replace(" ", "");
+        return Objects.equals(productForChecking, offerForChecking);
     }
 
     private MatcherOffer createMatcherOffer(ScrapperOffer scrapperOffer, Product product) {
@@ -112,7 +121,8 @@ public class MatcherService {
                 .setName(scrapperOffer.getName())
                 .setProductId(product.getProductId())
                 .setShop(scrapperOffer.getShopName())
-                .setAge(scrapperOffer.getAge());
+                .setAge(scrapperOffer.getAge())
+                .setType(scrapperOffer.getType());
     }
 
     private void sendOffersToAggregator(List<FinalOffer> finalOffers) {

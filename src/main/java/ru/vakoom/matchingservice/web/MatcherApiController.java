@@ -26,7 +26,7 @@ public class MatcherApiController {
     @Autowired
     ProductRefresher productRefresher;
 
-    @GetMapping("/match")
+    @GetMapping("/refreshProducts")
     public void test() {
         productRefresher.refreshProducts();
     }
