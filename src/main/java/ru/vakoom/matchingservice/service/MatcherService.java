@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.vakoom.matchingservice.model.FinalOffer;
@@ -30,7 +31,7 @@ public class MatcherService {
 
     private List<Product> products;
 
-    public void matchOffers(List<ScrapperOffer> scrapperOffers) {
+    public ResponseEntity<List<FinalOffer>> matchOffers(List<ScrapperOffer> scrapperOffers) {
         products = productRepository.findAll();
         List<FinalOffer> finalOffers = new ArrayList<>();
 
@@ -46,7 +47,7 @@ public class MatcherService {
                 }
             }
         }
-         sendOffersToAggregator(finalOffers);
+        return sendOffersToAggregator(finalOffers);
     }
 
     private Optional<MatcherOffer> getMatcherOfferByScrapperOffer(ScrapperOffer scrapperOffer) {
@@ -125,13 +126,13 @@ public class MatcherService {
                 .setType(scrapperOffer.getType());
     }
 
-    private void sendOffersToAggregator(List<FinalOffer> finalOffers) {
+    private ResponseEntity<List<FinalOffer>> sendOffersToAggregator(List<FinalOffer> finalOffers) {
         String url = AGGREGATOR_SERVICE_BASE_PATH + AGGREGATOR_SERVICE_RECEIVE_FINAL_OFFERS_PATH;
-        restTemplate.exchange(
+        return restTemplate.exchange(
                 url,
                 HttpMethod.POST,
                 new HttpEntity<>(finalOffers),
-                new ParameterizedTypeReference<List<FinalOffer>>() {
+                new ParameterizedTypeReference<>() {
                 }
         );
     }
