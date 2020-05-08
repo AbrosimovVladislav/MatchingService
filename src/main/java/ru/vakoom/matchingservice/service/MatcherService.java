@@ -34,18 +34,10 @@ public class MatcherService {
     public ResponseEntity<List<FinalOffer>> matchOffers(List<ScrapperOffer> scrapperOffers) {
         products = productRepository.findAll();
         List<FinalOffer> finalOffers = new ArrayList<>();
-
         for (var scrapperOffer : scrapperOffers) {
-            Optional<MatcherOffer> matcherOfferOrEmpty = getMatcherOfferByScrapperOffer(scrapperOffer);
-            if (matcherOfferOrEmpty.isPresent()) {
-                finalOffers.add(convertToFinalOffer(scrapperOffer, matcherOfferOrEmpty.get()));
-            } else {
-                matcherOfferOrEmpty = matchOfferWithProducts(scrapperOffer);
-                if (matcherOfferOrEmpty.isPresent()) {
-                    matcherOfferRepository.save(matcherOfferOrEmpty.get());
-                    finalOffers.add(convertToFinalOffer(scrapperOffer, matcherOfferOrEmpty.get()));
-                }
-            }
+            getMatcherOfferByScrapperOffer(scrapperOffer)
+                    .or(() -> matchOfferWithProducts(scrapperOffer).map(matcherOfferRepository::save))
+                    .ifPresent(matcherOffer -> finalOffers.add(convertToFinalOffer(scrapperOffer, matcherOffer)));
         }
         return sendOffersToAggregator(finalOffers);
     }
