@@ -1,12 +1,10 @@
 package ru.vakoom.matchingservice.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import ru.vakoom.matchingservice.client.AggregatorClient;
+import ru.vakoom.matchingservice.client.TroubleTicketClient;
 import ru.vakoom.matchingservice.model.FinalOffer;
 import ru.vakoom.matchingservice.model.MatcherOffer;
 import ru.vakoom.matchingservice.model.Product;
@@ -21,13 +19,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MatcherService {
 
-    public static final String AGGREGATOR_SERVICE_BASE_PATH = "http://localhost:8082";
-    public static final String AGGREGATOR_SERVICE_RECEIVE_FINAL_OFFERS_PATH = "/offers";
-
     private final MatcherOfferRepository matcherOfferRepository;
     private final ProductRepository productRepository;
-    private final TroubleTicketService troubleTicketService;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final TroubleTicketClient troubleTicketClient;
+    private final AggregatorClient aggregatorClient;
 
     private List<Product> products;
 
@@ -39,11 +34,10 @@ public class MatcherService {
                     .or(() -> matchOfferWithProducts(scrapperOffer).map(matcherOfferRepository::save))
                     .ifPresent(matcherOffer -> finalOffers.add(convertToFinalOffer(scrapperOffer, matcherOffer)));
         }
-        return sendOffersToAggregator(finalOffers);
+        return aggregatorClient.sendOffersToAggregator(finalOffers);
     }
 
     private Optional<MatcherOffer> getMatcherOfferByScrapperOffer(ScrapperOffer scrapperOffer) {
-        //ToDo оптимизировать для отпарвки батч матчинга
         return matcherOfferRepository.findByNameAndShopAndBrandAndAge(scrapperOffer.getName(),
                 scrapperOffer.getShopName(),
                 scrapperOffer.getBrand(),
@@ -60,7 +54,6 @@ public class MatcherService {
                 .setShopName(scrapperOffer.getShopName())
                 .setLink(scrapperOffer.getLink())
                 .setProductId(matcherOffer.getProductId());
-
     }
 
     private Optional<MatcherOffer> matchOfferWithProducts(ScrapperOffer scrapperOffer) {
@@ -74,7 +67,7 @@ public class MatcherService {
         if (matchedProducts.size() == 1) {
             return Optional.of(createMatcherOffer(scrapperOffer, matchedProducts.get(0)));
         } else {
-            troubleTicketService.sendToTroubleTicket(scrapperOffer, matchedProducts);
+            troubleTicketClient.sendToTroubleTicket(scrapperOffer, matchedProducts);
             return Optional.empty();
         }
     }
@@ -118,14 +111,4 @@ public class MatcherService {
                 .setType(scrapperOffer.getType());
     }
 
-    private ResponseEntity<List<FinalOffer>> sendOffersToAggregator(List<FinalOffer> finalOffers) {
-        String url = AGGREGATOR_SERVICE_BASE_PATH + AGGREGATOR_SERVICE_RECEIVE_FINAL_OFFERS_PATH;
-        return restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                new HttpEntity<>(finalOffers),
-                new ParameterizedTypeReference<>() {
-                }
-        );
-    }
 }
