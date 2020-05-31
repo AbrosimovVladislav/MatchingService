@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.vakoom.matchingservice.model.FinalOffer;
+import ru.vakoom.matchingservice.model.MatcherOffer;
 import ru.vakoom.matchingservice.model.ScrapperOffer;
 import ru.vakoom.matchingservice.scheduler.ProductRefresher;
 import ru.vakoom.matchingservice.service.MatcherService;
@@ -31,6 +32,11 @@ public class MatcherApiController {
     @GetMapping("/refreshProducts")
     public void test() {
         productRefresher.refreshProducts();
+    }
+
+    @PostMapping("/matcher")
+    public MatcherOffer createMatcherOffer(@RequestBody MatcherOffer matcherOffer) {
+        return matcherService.save(matcherOffer);
     }
 
 }

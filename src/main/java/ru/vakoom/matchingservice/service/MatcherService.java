@@ -26,6 +26,10 @@ public class MatcherService {
 
     private List<Product> products;
 
+    public MatcherOffer save(MatcherOffer matcherOffer) {
+        return matcherOfferRepository.save(matcherOffer);
+    }
+
     public ResponseEntity<List<FinalOffer>> matchOffers(List<ScrapperOffer> scrapperOffers) {
         products = productRepository.findAll();
         List<FinalOffer> finalOffers = new ArrayList<>();
