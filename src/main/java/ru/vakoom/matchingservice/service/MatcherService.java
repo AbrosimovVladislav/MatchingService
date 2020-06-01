@@ -1,6 +1,7 @@
 package ru.vakoom.matchingservice.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.vakoom.matchingservice.client.AggregatorClient;
@@ -15,6 +16,7 @@ import ru.vakoom.matchingservice.repo.ProductRepository;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MatcherService {
@@ -31,6 +33,7 @@ public class MatcherService {
     }
 
     public ResponseEntity<List<FinalOffer>> matchOffers(List<ScrapperOffer> scrapperOffers) {
+        scrapperOffers.forEach(o -> log.info(o.toString()));
         products = productRepository.findAll();
         List<FinalOffer> finalOffers = new ArrayList<>();
         for (var scrapperOffer : scrapperOffers) {
@@ -38,6 +41,7 @@ public class MatcherService {
                     .or(() -> matchOfferWithProducts(scrapperOffer).map(matcherOfferRepository::save))
                     .ifPresent(matcherOffer -> finalOffers.add(convertToFinalOffer(scrapperOffer, matcherOffer)));
         }
+        finalOffers.forEach(o -> log.info(o.toString()));
         return aggregatorClient.sendOffersToAggregator(finalOffers);
     }
 
