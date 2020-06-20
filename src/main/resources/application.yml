@@ -1,6 +1,9 @@
 server:
   port: 8081
 spring:
+  banner:
+    location=banner.txt:
+      txt:
   datasource:
     username: postgres
     password: root
@@ -9,7 +12,7 @@ spring:
     initialization-mode: always
     separator: ;;
   jpa:
-#    show-sql: true
+    #    show-sql: true
     database: postgresql
     hibernate:
       ddl-auto: update
@@ -21,3 +24,15 @@ spring:
 logging:
   file:
     name: matching-app.log
+
+
+# Aggregator service paths
+aggregator:
+  base-path: http://localhost:8082
+  offers-path: /offers
+  products-path: /allProducts
+
+# TroubleTicket service paths
+troubleticket:
+  base-path: http://localhost:8083
+  tickets-path: /tickets

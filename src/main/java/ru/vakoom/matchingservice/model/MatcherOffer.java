@@ -7,6 +7,7 @@ import javax.persistence.*;
 
 import static ru.vakoom.matchingservice.model.Type.TYPE_ID;
 
+
 @Data
 @Entity
 @Accessors(chain = true)

@@ -9,6 +9,7 @@ import javax.persistence.ManyToOne;
 
 import static ru.vakoom.matchingservice.model.Type.TYPE_ID;
 
+
 @Data
 @Entity
 public class Product {

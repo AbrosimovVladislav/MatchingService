@@ -1,7 +1,6 @@
 package ru.vakoom.matchingservice.web;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,20 +16,18 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class MatcherApiController {
+public class MatcherApiController implements MatcherApi {
 
     private final MatcherService matcherService;
+    private final ProductRefresher productRefresher;
 
     @PostMapping("/receiveOffers")
     public ResponseEntity<List<FinalOffer>> receiveOffers(@RequestBody List<ScrapperOffer> body) {
         return matcherService.matchOffers(body);
     }
 
-    @Autowired
-    ProductRefresher productRefresher;
-
     @GetMapping("/refreshProducts")
-    public void test() {
+    public void refreshProducts() {
         productRefresher.refreshProducts();
     }
 

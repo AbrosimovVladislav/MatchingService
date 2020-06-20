@@ -1,6 +1,7 @@
 package ru.vakoom.matchingservice.client;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.vakoom.matchingservice.model.Product;
@@ -12,8 +13,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TroubleTicketClient {
 
-    public static final String TT_BASE_PATH = "http://localhost:8083";
-    public static final String TT_SEND_TICKET_PATH = "/tickets";
+    @Value("${aggregator.base-path}")
+    public String TT_BASE_PATH;
+    @Value("${aggregator.base-path}")
+    public String TT_SEND_TICKET_PATH;
 
     private final RestTemplate restTemplate = new RestTemplate();
 

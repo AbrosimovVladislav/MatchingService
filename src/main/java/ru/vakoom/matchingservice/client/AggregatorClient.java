@@ -1,5 +1,6 @@
 package ru.vakoom.matchingservice.client;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -15,9 +16,12 @@ import java.util.List;
 @Component
 public class AggregatorClient {
 
-    public static final String AGGREGATOR_BASE_PATH = "http://localhost:8082";
-    public static final String AGGREGATOR_OFFERS_PATH = "/offers";
-    public static final String AGGREGATOR_PRODUCTS_PATH = "/allProducts";
+    @Value("${aggregator.base-path}")
+    public String AGGREGATOR_BASE_PATH;
+    @Value("${aggregator.offers-path}")
+    public String AGGREGATOR_OFFERS_PATH;
+    @Value("${aggregator.products-path}")
+    public String AGGREGATOR_PRODUCTS_PATH;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
