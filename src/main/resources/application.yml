@@ -3,7 +3,6 @@ server:
 spring:
   banner:
     location=banner.txt:
-      txt:
   datasource:
     username: postgres
     password: root
