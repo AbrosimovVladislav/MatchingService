@@ -12,22 +12,22 @@ import java.util.List;
 
 public interface MatcherApi {
 
-    @ApiOperation(value = "Receive offers from Scrapping service",
+    @ApiOperation(value = "Receive offers",
             notes = "Receive scrapper offers from Scrapping service -> match scrapper offers with existing products -> create and send final offers to Aggregator service",
             response = ResponseEntity.class)
     ResponseEntity<List<FinalOffer>> receiveOffers(
             @ApiParam(value = "List of scrapper offers for matching procedure")
             @RequestBody List<ScrapperOffer> body);
 
-    @ApiOperation(value = "",
-            notes = "")
+    @ApiOperation(value = "Refresh products",
+            notes = "Get actual list of products from aggregator service")
     void refreshProducts();
 
-    @ApiOperation(value = "",
-            notes = "",
+    @ApiOperation(value = "Create new matcher offer",
+            notes = "Save input matcher offer to db",
             response = ResponseEntity.class)
     MatcherOffer createMatcherOffer(
-            @ApiParam(value = "")
+            @ApiParam(value = "Input matcher offer")
             @RequestBody MatcherOffer matcherOffer);
 
 }
