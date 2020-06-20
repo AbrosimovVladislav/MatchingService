@@ -52,18 +52,6 @@ public class MatcherService {
                 scrapperOffer.getAge());
     }
 
-    private FinalOffer convertToFinalOffer(ScrapperOffer scrapperOffer, MatcherOffer matcherOffer) {
-        return new FinalOffer()
-                .setName(scrapperOffer.getName())
-                .setBrand(scrapperOffer.getBrand())
-                .setPrice(scrapperOffer.getPrice())
-                .setInStore(scrapperOffer.getInStore())
-                .setType(scrapperOffer.getType())
-                .setShopName(scrapperOffer.getShopName())
-                .setLink(scrapperOffer.getLink())
-                .setProductId(matcherOffer.getProductId());
-    }
-
     private Optional<MatcherOffer> matchOfferWithProducts(ScrapperOffer scrapperOffer) {
         List<Product> matchedProducts = products.stream()
                 .filter(product -> product.getType().equals(scrapperOffer.getType()))
@@ -107,6 +95,18 @@ public class MatcherService {
         String productForChecking = String.join("", productNameArr).replace(" ", "");
         String offerForChecking = String.join("", offerNameArr).replace(" ", "");
         return Objects.equals(productForChecking, offerForChecking);
+    }
+
+    private FinalOffer convertToFinalOffer(ScrapperOffer scrapperOffer, MatcherOffer matcherOffer) {
+        return new FinalOffer()
+                .setName(scrapperOffer.getName())
+                .setBrand(scrapperOffer.getBrand())
+                .setPrice(scrapperOffer.getPrice())
+                .setInStore(scrapperOffer.getInStore())
+                .setType(scrapperOffer.getType())
+                .setShopName(scrapperOffer.getShopName())
+                .setLink(scrapperOffer.getLink())
+                .setProductId(matcherOffer.getProductId());
     }
 
     private MatcherOffer createMatcherOffer(ScrapperOffer scrapperOffer, Product product) {
