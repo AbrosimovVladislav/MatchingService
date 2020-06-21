@@ -18,9 +18,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TroubleTicketClient {
 
-    @Value("${aggregator.base-path}")
+    @Value("${troubleticket.base-path}")
     public String TT_BASE_PATH;
-    @Value("${aggregator.base-path}")
+    @Value("${troubleticket.base-path}")
     public String TT_SEND_TICKET_PATH;
 
     private final RestTemplate restTemplate = new RestTemplate();
