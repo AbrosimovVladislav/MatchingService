@@ -20,7 +20,7 @@ public class TroubleTicketClient {
 
     @Value("${troubleticket.base-path}")
     public String TT_BASE_PATH;
-    @Value("${troubleticket.base-path}")
+    @Value("${troubleticket.tickets-path}")
     public String TT_SEND_TICKET_PATH;
 
     private final RestTemplate restTemplate = new RestTemplate();
