@@ -33,7 +33,7 @@ public class MatcherService {
     }
 
     public ResponseEntity<List<FinalOffer>> matchOffers(List<ScrapperOffer> scrapperOffers) {
-        scrapperOffers.forEach(o -> log.info(o.toString()));
+        log.info("Input scrapper offers from scrapper service size: {}", scrapperOffers.size());
         products = productRepository.findAll();
         List<FinalOffer> finalOffers = new ArrayList<>();
         for (var scrapperOffer : scrapperOffers) {
@@ -41,7 +41,7 @@ public class MatcherService {
                     .or(() -> matchOfferWithProducts(scrapperOffer).map(matcherOfferRepository::save))
                     .ifPresent(matcherOffer -> finalOffers.add(convertToFinalOffer(scrapperOffer, matcherOffer)));
         }
-        finalOffers.forEach(o -> log.info(o.toString()));
+        log.info("Output final offers from matching service size: {}", finalOffers.size());
         return aggregatorClient.sendOffersToAggregator(finalOffers);
     }
 
