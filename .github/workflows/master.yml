@@ -3,7 +3,7 @@ name: MASTER
 on:
   push:
     branches:
-    - master
+      - master
 
 jobs:
   build:
