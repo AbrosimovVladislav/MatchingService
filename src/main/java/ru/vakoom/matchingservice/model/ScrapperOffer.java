@@ -1,6 +1,7 @@
 package ru.vakoom.matchingservice.model;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -12,6 +13,7 @@ import static ru.vakoom.matchingservice.model.Type.TYPE_ID;
 
 @Data
 @Entity
+@Accessors(chain = true)
 public class ScrapperOffer {
     @Id
     private String id;
