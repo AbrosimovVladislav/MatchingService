@@ -20,6 +20,7 @@ public class MatcherOffer {
     private String shop;
     private String brand;
     private String age;
+    private String link;
     @ManyToOne
     @JoinColumn(name = TYPE_ID, nullable = false)
     private Type type;

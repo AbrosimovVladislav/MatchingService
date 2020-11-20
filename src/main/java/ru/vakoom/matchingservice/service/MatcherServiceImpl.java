@@ -120,7 +120,8 @@ public class MatcherServiceImpl implements MatcherService {
                 .setProductId(product.getProductId())
                 .setShop(scrapperOffer.getShopName())
                 .setAge(scrapperOffer.getAge())
-                .setType(scrapperOffer.getType());
+                .setType(scrapperOffer.getType())
+                .setLink(scrapperOffer.getLink());
     }
 
 }
