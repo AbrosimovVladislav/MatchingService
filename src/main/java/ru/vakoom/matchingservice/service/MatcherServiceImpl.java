@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ru.vakoom.matchingservice.annotation.Profiling;
 import ru.vakoom.matchingservice.client.AggregatorClient;
 import ru.vakoom.matchingservice.client.TroubleTicketClient;
 import ru.vakoom.matchingservice.model.FinalOffer;
@@ -13,13 +12,13 @@ import ru.vakoom.matchingservice.model.Product;
 import ru.vakoom.matchingservice.model.ScrapperOffer;
 import ru.vakoom.matchingservice.repo.MatcherOfferRepository;
 import ru.vakoom.matchingservice.repo.ProductRepository;
+import ru.vakoom.matchingservice.service.aspect.logging.MeasurePerformance;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@Profiling
 @RequiredArgsConstructor
 public class MatcherServiceImpl implements MatcherService {
 
@@ -36,6 +35,7 @@ public class MatcherServiceImpl implements MatcherService {
     }
 
     @Override
+    @MeasurePerformance
     public ResponseEntity<List<FinalOffer>> matchOffers(List<ScrapperOffer> scrapperOffers) {
         log.info("Input scrapper offers from scrapper service size: {}", scrapperOffers.size());
         products = productRepository.findAll();

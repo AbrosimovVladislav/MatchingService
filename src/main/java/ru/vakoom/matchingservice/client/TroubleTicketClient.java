@@ -1,6 +1,7 @@
 package ru.vakoom.matchingservice.client;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -14,6 +15,7 @@ import ru.vakoom.matchingservice.model.Ticket;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TroubleTicketClient {
@@ -27,13 +29,18 @@ public class TroubleTicketClient {
 
     public void sendToTroubleTicket(ScrapperOffer scrapperOffer, List<Product> products) {
         String url = TT_BASE_PATH + TT_SEND_TICKET_PATH;
-        restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                new HttpEntity<>(new Ticket(scrapperOffer, products, LocalDateTime.now())),
-                new ParameterizedTypeReference<>() {
-                }
-        );
+
+        try {
+            restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    new HttpEntity<>(new Ticket(scrapperOffer, products, LocalDateTime.now())),
+                    new ParameterizedTypeReference<>() {
+                    }
+            );
+        } catch (Exception e) {
+            log.error("Request to TT rejected: {}", e.getMessage());
+        }
 
     }
 

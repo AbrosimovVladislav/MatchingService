@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import ru.vakoom.matchingservice.model.FinalOffer;
 import ru.vakoom.matchingservice.model.Product;
+import ru.vakoom.matchingservice.service.aspect.logging.MeasurePerformance;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class AggregatorClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @MeasurePerformance
     public ResponseEntity<List<FinalOffer>> sendOffersToAggregator(List<FinalOffer> finalOffers) {
         String url = AGGREGATOR_BASE_PATH + AGGREGATOR_OFFERS_PATH;
         return restTemplate.exchange(
@@ -36,6 +38,7 @@ public class AggregatorClient {
         );
     }
 
+    @MeasurePerformance
     public List<Product> getProductsFromAggregator() {
         String url = AGGREGATOR_BASE_PATH + AGGREGATOR_PRODUCTS_PATH;
         return restTemplate.exchange(
