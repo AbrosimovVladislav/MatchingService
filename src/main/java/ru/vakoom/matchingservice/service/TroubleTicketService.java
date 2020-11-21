@@ -9,6 +9,7 @@ import ru.vakoom.matchingservice.client.TroubleTicketClient;
 import ru.vakoom.matchingservice.model.Product;
 import ru.vakoom.matchingservice.model.ScrapperOffer;
 import ru.vakoom.matchingservice.model.Ticket;
+import ru.vakoom.matchingservice.service.aspect.logging.MeasurePerformance;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,7 +25,8 @@ public class TroubleTicketService {
 
     private List<Ticket> ticketBatch = new ArrayList<>();
 
-    void sendTickets() {
+    @MeasurePerformance
+    public void sendTickets() {
         List<Ticket> newSavedTickets = troubleTicketClient.sendTickets(ticketBatch);
         if (!CollectionUtils.isEmpty(newSavedTickets)) log.info("This new tickets was added: {}", newSavedTickets);
     }
