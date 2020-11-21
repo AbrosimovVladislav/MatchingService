@@ -1,6 +1,5 @@
 package ru.vakoom.matchingservice.service;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -10,7 +9,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.vakoom.matchingservice.client.AggregatorClient;
-import ru.vakoom.matchingservice.client.TroubleTicketClient;
 import ru.vakoom.matchingservice.model.FinalOffer;
 import ru.vakoom.matchingservice.model.ScrapperOffer;
 import ru.vakoom.matchingservice.model.Type;
@@ -31,23 +29,20 @@ public class MatcherServiceImplTest {
 
     @MockBean
     MatcherOfferRepository matcherOfferRepository;
-
     @MockBean
-    TroubleTicketClient troubleTicketClient;
+    TroubleTicketService troubleTicketService;
     @MockBean
     AggregatorClient aggregatorClient;
 
     @Captor
     ArgumentCaptor<List<FinalOffer>> captor;
-
-
     List<ScrapperOffer> scrapperOffers = new ArrayList<>();
 
     @Test
-    @Disabled
     public void matchOffersTest() {
         when(matcherOfferRepository.findByNameAndShopAndBrandAndAge(any(), any(), any(), any())).thenReturn(Optional.empty());
-//        doNothing().when(troubleTicketClient).sendToTroubleTicket(any(), any());
+        doNothing().when(troubleTicketService).prepareTicketForBatch(any(), any());
+        doNothing().when(troubleTicketService).sendTickets();
 
         when(aggregatorClient.sendOffersToAggregator(any())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
@@ -66,7 +61,6 @@ public class MatcherServiceImplTest {
 
         matcherService.matchOffers(scrapperOffers);
         verify(aggregatorClient).sendOffersToAggregator(captor.capture());
-
 
         System.out.println(captor.getValue());
     }
