@@ -10,7 +10,6 @@ import ru.vakoom.matchingservice.model.MatcherOffer;
 import ru.vakoom.matchingservice.model.Product;
 import ru.vakoom.matchingservice.model.ScrapperOffer;
 import ru.vakoom.matchingservice.repo.MatcherOfferRepository;
-import ru.vakoom.matchingservice.repo.ProductRepository;
 import ru.vakoom.matchingservice.service.aspect.logging.MeasurePerformance;
 
 import java.util.*;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 public class MatcherServiceImpl implements MatcherService {
 
     private final MatcherOfferRepository matcherOfferRepository;
-    private final ProductRepository productRepository;
     private final AggregatorClient aggregatorClient;
     private final TroubleTicketService troubleTicketService;
 
@@ -37,7 +35,8 @@ public class MatcherServiceImpl implements MatcherService {
     @MeasurePerformance
     public ResponseEntity<List<FinalOffer>> matchOffers(List<ScrapperOffer> scrapperOffers) {
         log.info("Input scrapper offers from scrapper service size: {}", scrapperOffers.size());
-        products = productRepository.findAll();
+        //ToDo Переделать на get из TrustSource а не из AggregatorService
+        products = aggregatorClient.getProducts();
         List<FinalOffer> finalOffers = new ArrayList<>();
         for (var scrapperOffer : scrapperOffers) {
             getMatcherOfferByScrapperOffer(scrapperOffer)

@@ -19,10 +19,6 @@ public interface MatcherApi {
             @ApiParam(value = "List of scrapper offers for matching procedure")
             @RequestBody List<ScrapperOffer> body);
 
-    @ApiOperation(value = "Refresh products",
-            notes = "Get actual list of products from aggregator service")
-    void refreshProducts();
-
     @ApiOperation(value = "Create new matcher offer",
             notes = "Save input matcher offer to db",
             response = ResponseEntity.class)
