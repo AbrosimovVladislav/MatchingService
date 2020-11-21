@@ -8,12 +8,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import ru.vakoom.matchingservice.model.MatcherOffer;
 import ru.vakoom.matchingservice.model.Product;
 import ru.vakoom.matchingservice.model.ScrapperOffer;
 import ru.vakoom.matchingservice.model.Ticket;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -27,9 +29,8 @@ public class TroubleTicketClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public void sendToTroubleTicket(ScrapperOffer scrapperOffer, List<Product> products) {
+    public Optional<MatcherOffer> sendToTroubleTicket(ScrapperOffer scrapperOffer, List<Product> products) {
         String url = TT_BASE_PATH + TT_SEND_TICKET_PATH;
-
         try {
             restTemplate.exchange(
                     url,
@@ -38,10 +39,10 @@ public class TroubleTicketClient {
                     new ParameterizedTypeReference<>() {
                     }
             );
+            return Optional.empty();
         } catch (Exception e) {
             log.error("Request to TT rejected: {}", e.getMessage());
+            return Optional.empty();
         }
-
     }
-
 }

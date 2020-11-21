@@ -67,8 +67,7 @@ public class MatcherServiceImpl implements MatcherService {
         if (matchedProducts.size() == 1) {
             return Optional.of(createMatcherOffer(scrapperOffer, matchedProducts.get(0)));
         } else {
-            troubleTicketClient.sendToTroubleTicket(scrapperOffer, matchedProducts);
-            return Optional.empty();
+            return troubleTicketClient.sendToTroubleTicket(scrapperOffer, matchedProducts);
         }
     }
 
