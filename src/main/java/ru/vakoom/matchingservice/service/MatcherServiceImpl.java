@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.vakoom.matchingservice.client.AggregatorClient;
-import ru.vakoom.matchingservice.client.TroubleTicketClient;
 import ru.vakoom.matchingservice.model.FinalOffer;
 import ru.vakoom.matchingservice.model.MatcherOffer;
 import ru.vakoom.matchingservice.model.Product;
@@ -24,8 +23,8 @@ public class MatcherServiceImpl implements MatcherService {
 
     private final MatcherOfferRepository matcherOfferRepository;
     private final ProductRepository productRepository;
-    private final TroubleTicketClient troubleTicketClient;
     private final AggregatorClient aggregatorClient;
+    private final TroubleTicketService troubleTicketService;
 
     private List<Product> products;
 
@@ -46,6 +45,7 @@ public class MatcherServiceImpl implements MatcherService {
                     .ifPresent(matcherOffer -> finalOffers.add(convertToFinalOffer(scrapperOffer, matcherOffer)));
         }
         log.info("Output final offers from matching service size: {}", finalOffers.size());
+        troubleTicketService.sendTickets();
         return aggregatorClient.sendOffersToAggregator(finalOffers);
     }
 
@@ -67,7 +67,8 @@ public class MatcherServiceImpl implements MatcherService {
         if (matchedProducts.size() == 1) {
             return Optional.of(createMatcherOffer(scrapperOffer, matchedProducts.get(0)));
         } else {
-            return troubleTicketClient.sendToTroubleTicket(scrapperOffer, matchedProducts);
+            troubleTicketService.prepareTicketForBatch(scrapperOffer, matchedProducts);
+            return Optional.empty();
         }
     }
 
