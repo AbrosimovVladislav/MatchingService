@@ -50,16 +50,4 @@ public class AggregatorClient {
         ).getBody();
     }
 
-    @MeasurePerformance
-    public List<Product> getProductsFromAggregator() {
-        String url = AGGREGATOR_BASE_PATH + AGGREGATOR_PRODUCTS_PATH;
-        return restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                RequestEntity.EMPTY,
-                new ParameterizedTypeReference<List<Product>>() {
-                }
-        ).getBody();
-    }
-
 }
