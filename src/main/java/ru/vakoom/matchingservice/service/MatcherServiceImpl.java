@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.vakoom.matchingservice.client.AggregatorClient;
+import ru.vakoom.matchingservice.client.TrustInfoClient;
 import ru.vakoom.matchingservice.model.FinalOffer;
 import ru.vakoom.matchingservice.model.MatcherOffer;
 import ru.vakoom.matchingservice.model.Product;
@@ -23,12 +24,20 @@ public class MatcherServiceImpl implements MatcherService {
     private final MatcherOfferRepository matcherOfferRepository;
     private final AggregatorClient aggregatorClient;
     private final TroubleTicketService troubleTicketService;
+    private final TrustInfoClient trustInfoClient;
 
     private List<Product> products;
 
     @Override
+    //ToDo надо сделать Transactional style
     public MatcherOffer save(MatcherOffer matcherOffer) {
-        return matcherOfferRepository.save(matcherOffer);
+        MatcherOffer saved = matcherOfferRepository.save(matcherOffer);
+        try {
+            trustInfoClient.saveToTrustInfo(saved);
+        } catch (Exception e) {
+            log.error("Save to trust info rejected for MO: {}", saved);
+        }
+        return saved;
     }
 
     @Override
