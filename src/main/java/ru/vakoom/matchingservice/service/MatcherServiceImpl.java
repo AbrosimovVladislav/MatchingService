@@ -49,7 +49,7 @@ public class MatcherServiceImpl implements MatcherService {
         List<FinalOffer> finalOffers = new ArrayList<>();
         for (var scrapperOffer : scrapperOffers) {
             getMatcherOfferByScrapperOffer(scrapperOffer)
-                    .or(() -> matchOfferWithProducts(scrapperOffer).map(matcherOfferRepository::save))
+                    .or(() -> matchOfferWithProducts(scrapperOffer).map(this::save))
                     .ifPresent(matcherOffer -> finalOffers.add(convertToFinalOffer(scrapperOffer, matcherOffer)));
         }
         log.info("Output final offers from matching service size: {}", finalOffers.size());
@@ -66,7 +66,7 @@ public class MatcherServiceImpl implements MatcherService {
 
     private Optional<MatcherOffer> matchOfferWithProducts(ScrapperOffer scrapperOffer) {
         List<Product> matchedProducts = products.stream()
-                .filter(product -> product.getType().equals(scrapperOffer.getType()))
+                .filter(product -> product.getType().getTypeId().equals(scrapperOffer.getType().getTypeId()))
                 .filter(product -> product.getBrand().equalsIgnoreCase(scrapperOffer.getBrand()) || scrapperOffer.getBrand().isBlank())
                 .filter(product -> product.getAge().equalsIgnoreCase(scrapperOffer.getAge()) || scrapperOffer.getAge().isBlank())
                 .filter(product -> match(product, scrapperOffer))
